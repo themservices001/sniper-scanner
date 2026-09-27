@@ -35,6 +35,6 @@ jobs:
         run: |
           git config user.name 'GitHub Action'
           git config user.email 'action@github.com'
-          git add state.json || true
+          git add state.json last_run.txt || true
           git diff --staged --quiet || git commit -m "state update $(date -u +%Y-%m-%dT%H:%M)"
           git push || true
