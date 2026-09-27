@@ -16,31 +16,41 @@
     "KAITOUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "MANTAUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "MITOUSDT_SHORT": "2026-09-27 08:00:00+00:00",
-    "NEOUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "NEOUSDT_LONG": "2026-09-27 09:00:00+00:00",
     "PYTHUSDT_LONG": "2026-09-27 08:00:00+00:00",
-    "QIUSDT_LONG": "2026-09-27 09:00:00+00:00",
-    "RAYUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "QIUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "RAYUSDT_LONG": "2026-09-27 10:00:00+00:00",
     "SHIBUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "SOLUSDT_LONG": "2026-09-27 09:00:00+00:00",
     "TRUMPUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "TWTUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "WIFUSDT_LONG": "2026-09-27 08:00:00+00:00",
     "ZILUSDT_LONG": "2026-09-27 08:00:00+00:00",
-    "AVGOBUSDT_SHORT": "2026-09-27 08:00:00+00:00",
+    "AVGOBUSDT_SHORT": "2026-09-27 10:00:00+00:00",
     "GPROBUSDT_SHORT": "2026-09-27 08:00:00+00:00",
     "PORTALUSDT_SHORT": "2026-09-27 08:00:00+00:00",
-    "QCOMBUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "QCOMBUSDT_LONG": "2026-09-27 10:00:00+00:00",
     "SOXSBUSDT_SHORT": "2026-09-27 08:00:00+00:00",
-    "DODOUSDT_LONG": "2026-09-27 09:00:00+00:00",
-    "ENAUSDT_LONG": "2026-09-27 09:00:00+00:00",
+    "DODOUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "ENAUSDT_LONG": "2026-09-27 10:00:00+00:00",
     "ETHUSDT_LONG": "2026-09-27 09:00:00+00:00",
-    "GLMRUSDT_LONG": "2026-09-27 09:00:00+00:00",
-    "GUSDT_SHORT": "2026-09-27 09:00:00+00:00",
+    "GLMRUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "GUSDT_SHORT": "2026-09-27 10:00:00+00:00",
     "PLTRBUSDT_LONG": "2026-09-27 09:00:00+00:00",
     "SCRUSDT_LONG": "2026-09-27 09:00:00+00:00",
     "SIGNUSDT_LONG": "2026-09-27 09:00:00+00:00",
     "SUIUSDT_LONG": "2026-09-27 09:00:00+00:00",
-    "XVSUSDT_LONG": "2026-09-27 09:00:00+00:00"
+    "XVSUSDT_LONG": "2026-09-27 09:00:00+00:00",
+    "DCRUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "PENGUUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "UUSDT_LONG": "2026-09-27 08:00:00+00:00",
+    "LUNCUSDT_LONG": "2026-09-27 09:00:00+00:00",
+    "EDENUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "MEMEUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "PENDLEUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "PLUMEUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "PYPLBUSDT_LONG": "2026-09-27 10:00:00+00:00",
+    "WUSDT_LONG": "2026-09-27 10:00:00+00:00"
   },
   "pending": {
     "ASTSBUSDT_LONG": {
@@ -54,7 +64,7 @@
       "vol_ratio": 1.63,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "BONKUSDT_LONG": {
       "symbol": "BONKUSDT",
@@ -67,20 +77,7 @@
       "vol_ratio": 1.99,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "DCRUSDT_LONG": {
-      "symbol": "DCRUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 18.4,
-      "rsi": 65.8,
-      "adx": 60.8,
-      "vol_ratio": 1.72,
-      "trend3": "V\u25b2\u2502A\u25bc",
-      "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "ENSUSDT_LONG": {
       "symbol": "ENSUSDT",
@@ -93,7 +90,7 @@
       "vol_ratio": 2.19,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "GENIUSUSDT_SHORT": {
       "symbol": "GENIUSUSDT",
@@ -106,7 +103,7 @@
       "vol_ratio": 1.73,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "MUBUSDT_LONG": {
       "symbol": "MUBUSDT",
@@ -119,7 +116,7 @@
       "vol_ratio": 1.58,
       "trend3": "V\u25b2\u2502A\u25ac",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "MUUBUSDT_LONG": {
       "symbol": "MUUBUSDT",
@@ -132,20 +129,7 @@
       "vol_ratio": 11.58,
       "trend3": "V\u25b2\u2502A\u25bc",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "PENGUUSDT_LONG": {
-      "symbol": "PENGUUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 0.010101,
-      "rsi": 69.5,
-      "adx": 32.2,
-      "vol_ratio": 1.57,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "SEIUSDT_LONG": {
       "symbol": "SEIUSDT",
@@ -158,7 +142,7 @@
       "vol_ratio": 1.72,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "SUPERUSDT_LONG": {
       "symbol": "SUPERUSDT",
@@ -171,7 +155,7 @@
       "vol_ratio": 3.44,
       "trend3": "V\u25b2\u2502A\u25bc",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "USD1USDT_LONG": {
       "symbol": "USD1USDT",
@@ -184,20 +168,7 @@
       "vol_ratio": 2.07,
       "trend3": "V\u25b2\u2502A\u25ac",
       "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "UUSDT_LONG": {
-      "symbol": "UUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 10,
-      "price": 1.0002,
-      "rsi": 80.0,
-      "adx": 85.7,
-      "vol_ratio": 2.57,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 08:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "AXTIBUSDT_LONG": {
       "symbol": "AXTIBUSDT",
@@ -210,7 +181,7 @@
       "vol_ratio": 1.67,
       "trend3": "V\u25b2\u2502A\u25ac",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "BCHUSDT_LONG": {
       "symbol": "BCHUSDT",
@@ -223,7 +194,7 @@
       "vol_ratio": 1.69,
       "trend3": "V\u25bc\u2502A\u25b2",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "BNBUSDT_LONG": {
       "symbol": "BNBUSDT",
@@ -236,7 +207,7 @@
       "vol_ratio": 1.61,
       "trend3": "V\u25b2\u2502A\u25ac",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "CRVUSDT_LONG": {
       "symbol": "CRVUSDT",
@@ -249,33 +220,7 @@
       "vol_ratio": 1.77,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "LUNCUSDT_LONG": {
-      "symbol": "LUNCUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 8,
-      "price": 5.651e-05,
-      "rsi": 70.0,
-      "adx": 28.6,
-      "vol_ratio": 1.71,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "NEOUSDT_LONG": {
-      "symbol": "NEOUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 2.695,
-      "rsi": 64.6,
-      "adx": 34.7,
-      "vol_ratio": 2.43,
-      "trend3": "V\u25b2\u2502A\u25ac",
-      "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "WOOUSDT_LONG": {
       "symbol": "WOOUSDT",
@@ -288,7 +233,7 @@
       "vol_ratio": 2.85,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "ZILUSDT_LONG": {
       "symbol": "ZILUSDT",
@@ -301,7 +246,7 @@
       "vol_ratio": 3.37,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 09:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "AMDBUSDT_LONG": {
       "symbol": "AMDBUSDT",
@@ -314,20 +259,7 @@
       "vol_ratio": 4.6,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "AVGOBUSDT_SHORT": {
-      "symbol": "AVGOBUSDT",
-      "direction": "SHORT",
-      "elite": false,
-      "score": 7,
-      "price": 353.81,
-      "rsi": 37.6,
-      "adx": 21.6,
-      "vol_ratio": 2.65,
-      "trend3": "V\u25b2\u2502A\u25bc",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "BIGTIMEUSDT_LONG": {
       "symbol": "BIGTIMEUSDT",
@@ -340,7 +272,7 @@
       "vol_ratio": 2.38,
       "trend3": "V\u25bc\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "BNSOLUSDT_LONG": {
       "symbol": "BNSOLUSDT",
@@ -353,7 +285,7 @@
       "vol_ratio": 1.84,
       "trend3": "V\u25bc\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "COINBUSDT_LONG": {
       "symbol": "COINBUSDT",
@@ -366,7 +298,7 @@
       "vol_ratio": 5.73,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "DGBUSDT_LONG": {
       "symbol": "DGBUSDT",
@@ -379,59 +311,7 @@
       "vol_ratio": 2.25,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "DODOUSDT_LONG": {
-      "symbol": "DODOUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 10,
-      "price": 0.01883,
-      "rsi": 78.7,
-      "adx": 48.4,
-      "vol_ratio": 4.0,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "EDENUSDT_LONG": {
-      "symbol": "EDENUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 8,
-      "price": 0.06359,
-      "rsi": 76.1,
-      "adx": 24.6,
-      "vol_ratio": 1.69,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "ENAUSDT_LONG": {
-      "symbol": "ENAUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 0.2719,
-      "rsi": 76.8,
-      "adx": 49.2,
-      "vol_ratio": 1.58,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "GLMRUSDT_LONG": {
-      "symbol": "GLMRUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 0.010203,
-      "rsi": 79.5,
-      "adx": 83.7,
-      "vol_ratio": 1.63,
-      "trend3": "V\u25bc\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "GMTUSDT_LONG": {
       "symbol": "GMTUSDT",
@@ -444,7 +324,7 @@
       "vol_ratio": 1.53,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "GNSUSDT_LONG": {
       "symbol": "GNSUSDT",
@@ -457,7 +337,7 @@
       "vol_ratio": 2.5,
       "trend3": "V\u25b2\u2502A\u25bc",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "GRTUSDT_LONG": {
       "symbol": "GRTUSDT",
@@ -470,20 +350,7 @@
       "vol_ratio": 1.76,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "GUSDT_SHORT": {
-      "symbol": "GUSDT",
-      "direction": "SHORT",
-      "elite": true,
-      "score": 9,
-      "price": 0.00555,
-      "rsi": 30.8,
-      "adx": 64.7,
-      "vol_ratio": 1.98,
-      "trend3": "V\u25b2\u2502A\u25bc",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "HOMEUSDT_SHORT": {
       "symbol": "HOMEUSDT",
@@ -496,98 +363,7 @@
       "vol_ratio": 3.63,
       "trend3": "V\u25b2\u2502A\u25bc",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "MEMEUSDT_LONG": {
-      "symbol": "MEMEUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 9,
-      "price": 0.000643,
-      "rsi": 63.2,
-      "adx": 43.7,
-      "vol_ratio": 3.02,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "PENDLEUSDT_LONG": {
-      "symbol": "PENDLEUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 8,
-      "price": 2.632,
-      "rsi": 63.5,
-      "adx": 16.1,
-      "vol_ratio": 1.75,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "PLUMEUSDT_LONG": {
-      "symbol": "PLUMEUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 10,
-      "price": 0.01895,
-      "rsi": 82.2,
-      "adx": 35.6,
-      "vol_ratio": 1.72,
-      "trend3": "V\u25b2\u2502A\u25bc",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "PYPLBUSDT_LONG": {
-      "symbol": "PYPLBUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 55.05,
-      "rsi": 57.7,
-      "adx": 30.4,
-      "vol_ratio": 2.79,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "QCOMBUSDT_LONG": {
-      "symbol": "QCOMBUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 204.08,
-      "rsi": 61.5,
-      "adx": 52.9,
-      "vol_ratio": 3.92,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "QIUSDT_LONG": {
-      "symbol": "QIUSDT",
-      "direction": "LONG",
-      "elite": true,
-      "score": 10,
-      "price": 0.003496,
-      "rsi": 68.4,
-      "adx": 29.7,
-      "vol_ratio": 1.69,
-      "trend3": "V\u25bc\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
-    },
-    "RAYUSDT_LONG": {
-      "symbol": "RAYUSDT",
-      "direction": "LONG",
-      "elite": false,
-      "score": 7,
-      "price": 2.268,
-      "rsi": 72.2,
-      "adx": 52.5,
-      "vol_ratio": 3.16,
-      "trend3": "V\u25b2\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "SCRUSDT_LONG": {
       "symbol": "SCRUSDT",
@@ -600,7 +376,7 @@
       "vol_ratio": 2.55,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "SIGNUSDT_LONG": {
       "symbol": "SIGNUSDT",
@@ -613,7 +389,7 @@
       "vol_ratio": 1.79,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
     "SOXSBUSDT_SHORT": {
       "symbol": "SOXSBUSDT",
@@ -626,20 +402,293 @@
       "vol_ratio": 1.83,
       "trend3": "V\u25b2\u2502A\u25b2",
       "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "last_checked": "2026-09-27 11:00:00+00:00"
     },
-    "WUSDT_LONG": {
-      "symbol": "WUSDT",
+    "1INCHUSDT_LONG": {
+      "symbol": "1INCHUSDT",
       "direction": "LONG",
       "elite": false,
       "score": 7,
-      "price": 0.01472,
-      "rsi": 63.7,
-      "adx": 49.9,
-      "vol_ratio": 1.72,
+      "price": 0.1034,
+      "rsi": 73.0,
+      "adx": 30.0,
+      "vol_ratio": 1.54,
+      "trend3": "V\u25bc\u2502A\u25bc",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "AVAUSDT_LONG": {
+      "symbol": "AVAUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 0.2541,
+      "rsi": 78.4,
+      "adx": 55.4,
+      "vol_ratio": 2.01,
+      "trend3": "V\u25b2\u2502A\u25ac",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "AVGOBUSDT_SHORT": {
+      "symbol": "AVGOBUSDT",
+      "direction": "SHORT",
+      "elite": true,
+      "score": 8,
+      "price": 353.71,
+      "rsi": 23.8,
+      "adx": 21.5,
+      "vol_ratio": 1.77,
+      "trend3": "V\u25bc\u2502A\u25bc",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "EDENUSDT_LONG": {
+      "symbol": "EDENUSDT",
+      "direction": "LONG",
+      "elite": false,
+      "score": 7,
+      "price": 0.06328,
+      "rsi": 78.9,
+      "adx": 27.7,
+      "vol_ratio": 1.61,
       "trend3": "V\u25bc\u2502A\u25b2",
-      "n_bar_time": "2026-09-27 10:00:00+00:00",
-      "last_checked": "2026-09-27 10:00:00+00:00"
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "GLMRUSDT_LONG": {
+      "symbol": "GLMRUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 9,
+      "price": 0.010111,
+      "rsi": 74.2,
+      "adx": 85.2,
+      "vol_ratio": 1.67,
+      "trend3": "V\u25bc\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "GNOUSDT_LONG": {
+      "symbol": "GNOUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 10,
+      "price": 118.83,
+      "rsi": 78.1,
+      "adx": 67.5,
+      "vol_ratio": 2.33,
+      "trend3": "V\u25b2\u2502A\u25bc",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "GUSDT_SHORT": {
+      "symbol": "GUSDT",
+      "direction": "SHORT",
+      "elite": false,
+      "score": 7,
+      "price": 0.00555,
+      "rsi": 33.3,
+      "adx": 64.4,
+      "vol_ratio": 1.54,
+      "trend3": "V\u25b2\u2502A\u25bc",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "KERNELUSDT_LONG": {
+      "symbol": "KERNELUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 9,
+      "price": 0.0549,
+      "rsi": 78.9,
+      "adx": 24.4,
+      "vol_ratio": 2.66,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "LUNAUSDT_LONG": {
+      "symbol": "LUNAUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 0.0539,
+      "rsi": 76.9,
+      "adx": 29.1,
+      "vol_ratio": 6.31,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "LUNCUSDT_LONG": {
+      "symbol": "LUNCUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 9,
+      "price": 5.661e-05,
+      "rsi": 75.9,
+      "adx": 31.0,
+      "vol_ratio": 2.5,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "METISUSDT_LONG": {
+      "symbol": "METISUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 9,
+      "price": 3.76,
+      "rsi": 80.7,
+      "adx": 28.0,
+      "vol_ratio": 2.44,
+      "trend3": "V\u25bc\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "MRVLBUSDT_LONG": {
+      "symbol": "MRVLBUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 264.36,
+      "rsi": 72.4,
+      "adx": 27.1,
+      "vol_ratio": 1.79,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "MUBARAKUSDT_LONG": {
+      "symbol": "MUBARAKUSDT",
+      "direction": "LONG",
+      "elite": false,
+      "score": 7,
+      "price": 0.05621,
+      "rsi": 46.9,
+      "adx": 53.2,
+      "vol_ratio": 2.5,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "NBISBUSDT_LONG": {
+      "symbol": "NBISBUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 239.98,
+      "rsi": 60.8,
+      "adx": 24.6,
+      "vol_ratio": 1.67,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "ORCAUSDT_LONG": {
+      "symbol": "ORCAUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 1.778,
+      "rsi": 75.6,
+      "adx": 31.9,
+      "vol_ratio": 2.67,
+      "trend3": "V\u25bc\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "PLUMEUSDT_LONG": {
+      "symbol": "PLUMEUSDT",
+      "direction": "LONG",
+      "elite": false,
+      "score": 7,
+      "price": 0.01861,
+      "rsi": 76.6,
+      "adx": 36.4,
+      "vol_ratio": 1.51,
+      "trend3": "V\u25b2\u2502A\u25ac",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "PYPLBUSDT_LONG": {
+      "symbol": "PYPLBUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 8,
+      "price": 55.16,
+      "rsi": 78.8,
+      "adx": 31.4,
+      "vol_ratio": 3.06,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "QIUSDT_LONG": {
+      "symbol": "QIUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 10,
+      "price": 0.003805,
+      "rsi": 78.3,
+      "adx": 34.5,
+      "vol_ratio": 5.19,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "QKCUSDT_LONG": {
+      "symbol": "QKCUSDT",
+      "direction": "LONG",
+      "elite": true,
+      "score": 10,
+      "price": 0.003109,
+      "rsi": 84.7,
+      "adx": 44.9,
+      "vol_ratio": 2.92,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "SKHYBUSDT_LONG": {
+      "symbol": "SKHYBUSDT",
+      "direction": "LONG",
+      "elite": false,
+      "score": 7,
+      "price": 192.34,
+      "rsi": 64.7,
+      "adx": 27.0,
+      "vol_ratio": 1.67,
+      "trend3": "V\u25bc\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "SOPHUSDT_SHORT": {
+      "symbol": "SOPHUSDT",
+      "direction": "SHORT",
+      "elite": true,
+      "score": 10,
+      "price": 0.0038,
+      "rsi": 44.4,
+      "adx": 39.5,
+      "vol_ratio": 1.75,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
+    },
+    "THETAUSDT_LONG": {
+      "symbol": "THETAUSDT",
+      "direction": "LONG",
+      "elite": false,
+      "score": 7,
+      "price": 0.2368,
+      "rsi": 78.2,
+      "adx": 26.5,
+      "vol_ratio": 1.58,
+      "trend3": "V\u25b2\u2502A\u25b2",
+      "n_bar_time": "2026-09-27 11:00:00+00:00",
+      "last_checked": "2026-09-27 11:00:00+00:00"
     }
   }
 }
