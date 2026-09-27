@@ -1,6 +1,12 @@
 """
 Sniper Core Scanner — replicates Pine Script indicator logic
 Fetches full Binance USDT list dynamically, sends Telegram alerts.
+
+Fixes applied:
+- Uses data-api.binance.vision (avoids HTTP 451 geo-block)
+- Multi-endpoint fallback
+- Bybit fallback if all Binance endpoints fail
+- last_run.txt always written (even on early exit) to keep repo active
 """
 
 import os
@@ -15,18 +21,51 @@ from datetime import datetime, timezone
 TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 STATE_FILE = "state.json"
+LAST_RUN_FILE = "last_run.txt"
+
 TIMEFRAME = "1d"
 CANDLE_LIMIT = 300
 MIN_CONFLUENCE = 7
 VOL_SPIKE_MULT = 1.5
 FLAT_THRESHOLD_PCT = 3.0
-REQUEST_DELAY = 0.15  # seconds between Binance calls
+REQUEST_DELAY = 0.15  # seconds between requests
 
-BASE_URL = "https://api.binance.com"
+# ── BINANCE ENDPOINTS (data-api.binance.vision is not geo-blocked) ──
+BINANCE_CANDIDATES = [
+    "https://data-api.binance.vision",
+    "https://api.binance.com",
+    "https://api1.binance.com",
+    "https://api2.binance.com",
+    "https://api3.binance.com",
+]
+
+BASE_URL = None  # set at runtime
 
 
-def fetch_all_usdt_pairs(exclude_leveraged=True, exclude_stable=True):
+def resolve_binance():
+    """Return the first Binance endpoint that responds, or None."""
+    global BASE_URL
+    for url in BINANCE_CANDIDATES:
+        try:
+            r = requests.get(f"{url}/api/v3/ping", timeout=8)
+            if r.status_code == 200:
+                BASE_URL = url
+                print(f"Using Binance endpoint: {url}")
+                return url
+        except Exception as e:
+            print(f"  {url} unreachable: {e}")
+    print("All Binance endpoints unreachable.")
+    return None
+
+
+# ══════════════════════════════════════════════════════════════════
+#  BINANCE DATA FETCH
+# ══════════════════════════════════════════════════════════════════
+
+def fetch_all_usdt_pairs():
     """Fetch every active USDT spot pair from Binance."""
+    if not BASE_URL:
+        return []
     url = f"{BASE_URL}/api/v3/exchangeInfo"
     try:
         r = requests.get(url, timeout=15)
@@ -47,26 +86,27 @@ def fetch_all_usdt_pairs(exclude_leveraged=True, exclude_stable=True):
             continue
         if s.get("status") != "TRADING":
             continue
-        if exclude_stable and s.get("baseAsset") in STABLE_BASES:
+        if s.get("baseAsset") in STABLE_BASES:
             continue
-        if exclude_leveraged:
-            base = s.get("baseAsset", "")
-            if base.endswith(("UP", "DOWN", "BULL", "BEAR")):
-                continue
+        base = s.get("baseAsset", "")
+        if base.endswith(("UP", "DOWN", "BULL", "BEAR")):
+            continue
         symbols.append(s["symbol"])
 
     return sorted(symbols)
 
 
 def fetch_klines(symbol, interval="1d", limit=300):
-    """Fetch OHLCV from Binance public API."""
+    """Fetch OHLCV candles from Binance."""
+    if not BASE_URL:
+        return None
     url = f"{BASE_URL}/api/v3/klines"
     params = {"symbol": symbol, "interval": interval, "limit": limit}
     try:
         r = requests.get(url, params=params, timeout=10)
         r.raise_for_status()
         data = r.json()
-    except Exception as e:
+    except Exception:
         return None
 
     df = pd.DataFrame(data, columns=[
@@ -81,9 +121,72 @@ def fetch_klines(symbol, interval="1d", limit=300):
     return df[["open", "high", "low", "close", "volume"]].dropna()
 
 
-# ── INDICATOR CALCULATIONS ──
+# ══════════════════════════════════════════════════════════════════
+#  BYBIT FALLBACK
+# ══════════════════════════════════════════════════════════════════
+
+def fetch_all_usdt_pairs_bybit():
+    """Fallback: fetch USDT spot pairs from Bybit."""
+    url = "https://api.bybit.com/v5/market/instruments-info"
+    try:
+        r = requests.get(url, params={"category": "spot"}, timeout=15)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"  Bybit symbol fetch failed: {e}")
+        return []
+
+    STABLE_BASES = {"USDC", "BUSD", "TUSD", "FDUSD", "DAI", "USDE", "PYUSD"}
+    symbols = []
+    for s in data.get("result", {}).get("list", []):
+        if s.get("quoteCoin") != "USDT":
+            continue
+        if s.get("status") != "Trading":
+            continue
+        base = s.get("baseCoin", "")
+        if base in STABLE_BASES:
+            continue
+        if base.endswith(("UP", "DOWN", "BULL", "BEAR")):
+            continue
+        symbols.append(s["symbol"])
+
+    return sorted(symbols)
+
+
+def fetch_klines_bybit(symbol, interval="D", limit=300):
+    """Fallback: fetch candles from Bybit. Interval format: 'D' for daily, 'W', 'M', '60' for 1H."""
+    url = "https://api.bybit.com/v5/market/kline"
+    params = {"category": "spot", "symbol": symbol, "interval": interval, "limit": limit}
+    try:
+        r = requests.get(url, params=params, timeout=10)
+        r.raise_for_status()
+        data = r.json()
+    except Exception:
+        return None
+
+    rows = data.get("result", {}).get("list", [])
+    if not rows:
+        return None
+
+    # Bybit returns newest first — reverse
+    rows = list(reversed(rows))
+    df = pd.DataFrame(rows, columns=[
+        "open_time", "open", "high", "low", "close", "volume", "turnover"
+    ])
+    for col in ["open", "high", "low", "close", "volume"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+    df["open_time"] = pd.to_datetime(df["open_time"].astype("int64"), unit="ms", utc=True)
+    df.set_index("open_time", inplace=True)
+    return df[["open", "high", "low", "close", "volume"]].dropna()
+
+
+# ══════════════════════════════════════════════════════════════════
+#  INDICATOR CALCULATIONS
+# ══════════════════════════════════════════════════════════════════
+
 def ema(series, length):
     return series.ewm(span=length, adjust=False).mean()
+
 
 def rsi(series, length=14):
     delta = series.diff()
@@ -92,12 +195,14 @@ def rsi(series, length=14):
     rs = gain / loss.replace(0, np.nan)
     return 100 - (100 / (1 + rs))
 
+
 def atr(df, length=14):
     hl = df["high"] - df["low"]
     hc = (df["high"] - df["close"].shift()).abs()
     lc = (df["low"] - df["close"].shift()).abs()
     tr = pd.concat([hl, hc, lc], axis=1).max(axis=1)
     return tr.rolling(length).mean()
+
 
 def adx(df, length=14):
     up = df["high"].diff()
@@ -116,15 +221,22 @@ def adx(df, length=14):
     adx_s = dx.rolling(length).mean()
     return adx_s, plus_di, minus_di
 
+
 def macd(series, fast=12, slow=26, signal=9):
     macd_line = ema(series, fast) - ema(series, slow)
     signal_line = ema(macd_line, signal)
     return macd_line, signal_line, macd_line - signal_line
 
 
+# ══════════════════════════════════════════════════════════════════
+#  CONFLUENCE SCORE (mirrors Pine Script v5)
+# ══════════════════════════════════════════════════════════════════
+
 def compute_confluence(df, direction):
     c, o, h, l, v = df["close"], df["open"], df["high"], df["low"], df["volume"]
-    ema9 = ema(c, 9); ema21 = ema(c, 21); ema100 = ema(c, 100)
+    ema9 = ema(c, 9)
+    ema21 = ema(c, 21)
+    ema100 = ema(c, 100)
     rsi7 = rsi(c, 7)
     adx14, _, _ = adx(df, 14)
     macd_line, signal_line, _ = macd(c)
@@ -151,7 +263,8 @@ def compute_confluence(df, direction):
         body = (c - o).abs()
         lower_wick = pd.concat([o, c], axis=1).min(axis=1) - l
         score += 1 if lower_wick.iloc[last] > body.iloc[last] * 1.2 and c.iloc[last] > o.iloc[last] else 0
-    else:
+
+    else:  # SHORT
         score += 1 if ema9.iloc[last] < ema21.iloc[last] else 0
         score += 1 if c.iloc[last] < ema100.iloc[last] else 0
         score += 1 if c.iloc[last] < ema100.iloc[last] else 0
@@ -174,27 +287,41 @@ def compute_confluence(df, direction):
     return score
 
 
+# ══════════════════════════════════════════════════════════════════
+#  SIGNAL CHECK
+# ══════════════════════════════════════════════════════════════════
+
 def check_signal(df, symbol):
     if len(df) < 210:
         return None
+
     c, o, h, l, v = df["close"], df["open"], df["high"], df["low"], df["volume"]
-    ema9 = ema(c, 9); ema21 = ema(c, 21); ema100 = ema(c, 100)
+    ema9 = ema(c, 9)
+    ema21 = ema(c, 21)
+    ema100 = ema(c, 100)
     rsi7 = rsi(c, 7)
     adx14, _, _ = adx(df, 14)
     vol_sma20 = v.rolling(20).mean()
-    last = -1; prev = -2
+    last = -1
+    prev = -2
 
     htf_ok_long = c.iloc[last] > ema100.iloc[last]
     htf_ok_short = c.iloc[last] < ema100.iloc[last]
 
-    base_long = (c.iloc[last] > ema100.iloc[last] and htf_ok_long
-                 and 45 < rsi7.iloc[last] < 85
-                 and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
-                 and ema9.iloc[last] > ema9.iloc[prev])
-    base_short = (c.iloc[last] < ema100.iloc[last] and htf_ok_short
-                  and 15 < rsi7.iloc[last] < 55
-                  and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
-                  and ema9.iloc[last] < ema9.iloc[prev])
+    base_long = (
+        c.iloc[last] > ema100.iloc[last]
+        and htf_ok_long
+        and 45 < rsi7.iloc[last] < 85
+        and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
+        and ema9.iloc[last] > ema9.iloc[prev]
+    )
+    base_short = (
+        c.iloc[last] < ema100.iloc[last]
+        and htf_ok_short
+        and 15 < rsi7.iloc[last] < 55
+        and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
+        and ema9.iloc[last] < ema9.iloc[prev]
+    )
 
     score_long = compute_confluence(df, "LONG")
     score_short = compute_confluence(df, "SHORT")
@@ -234,17 +361,26 @@ def check_signal(df, symbol):
     }
 
 
+# ══════════════════════════════════════════════════════════════════
+#  TELEGRAM
+# ══════════════════════════════════════════════════════════════════
+
 def send_telegram(message):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
+        print("  Telegram not configured — printing to log:")
         print(message)
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message,
-               "parse_mode": "Markdown", "disable_web_page_preview": True}
+    payload = {
+        "chat_id": TELEGRAM_CHAT_ID,
+        "text": message,
+        "parse_mode": "Markdown",
+        "disable_web_page_preview": True,
+    }
     try:
         r = requests.post(url, json=payload, timeout=10)
         if r.status_code != 200:
-            print(f"  Telegram error: {r.text}")
+            print(f"  Telegram error {r.status_code}: {r.text}")
     except Exception as e:
         print(f"  Telegram exception: {e}")
 
@@ -263,6 +399,10 @@ def format_signal(sig):
     )
 
 
+# ══════════════════════════════════════════════════════════════════
+#  STATE
+# ══════════════════════════════════════════════════════════════════
+
 def load_state():
     try:
         with open(STATE_FILE, "r") as f:
@@ -270,64 +410,92 @@ def load_state():
     except (FileNotFoundError, json.JSONDecodeError):
         return {}
 
+
 def save_state(state):
     with open(STATE_FILE, "w") as f:
         json.dump(state, f, indent=2)
 
 
+# ══════════════════════════════════════════════════════════════════
+#  MAIN
+# ══════════════════════════════════════════════════════════════════
+
 def main():
-    watchlist = []
     try:
-        with open("watchlist.txt", "r") as f:
-            watchlist = [line.strip().upper() for line in f
-                         if line.strip() and not line.startswith("#")]
-    except FileNotFoundError:
-        pass
+        # Resolve a working Binance endpoint
+        binance_ok = resolve_binance() is not None
 
-    if watchlist:
-        print(f"Using manual watchlist: {len(watchlist)} symbols")
-    else:
-        print("Fetching full Binance USDT list...")
-        watchlist = fetch_all_usdt_pairs()
-        print(f"Fetched {len(watchlist)} active USDT pairs")
+        # Load manual watchlist if present
+        watchlist = []
+        try:
+            with open("watchlist.txt", "r") as f:
+                watchlist = [line.strip().upper() for line in f
+                             if line.strip() and not line.startswith("#")]
+        except FileNotFoundError:
+            pass
 
-    if not watchlist:
-        print("No symbols to scan. Exiting.")
-        return
+        # Decide source: manual watchlist, or auto-fetch
+        if watchlist:
+            print(f"Using manual watchlist: {len(watchlist)} symbols")
+            if binance_ok:
+                kline_fetcher = fetch_klines
+            else:
+                print("Binance unreachable — falling back to Bybit for candles.")
+                kline_fetcher = fetch_klines_bybit
+        else:
+            if binance_ok:
+                print("Fetching full Binance USDT list...")
+                watchlist = fetch_all_usdt_pairs()
+                print(f"Fetched {len(watchlist)} active USDT pairs")
+                kline_fetcher = fetch_klines
+            else:
+                print("Binance unreachable — falling back to Bybit.")
+                watchlist = fetch_all_usdt_pairs_bybit()
+                print(f"Fetched {len(watchlist)} active USDT pairs from Bybit")
+                kline_fetcher = fetch_klines_bybit
 
-    state = load_state()
-    new_signals = []
+        if not watchlist:
+            print("No symbols to scan.")
+            return
 
-    for i, symbol in enumerate(watchlist):
-        if i % 50 == 0:
-            print(f"  Progress: {i}/{len(watchlist)}")
-        df = fetch_klines(symbol, TIMEFRAME, CANDLE_LIMIT)
-        if df is None or len(df) < 210:
+        state = load_state()
+        new_signals = []
+
+        for i, symbol in enumerate(watchlist):
+            if i % 50 == 0:
+                print(f"  Progress: {i}/{len(watchlist)}")
+            df = kline_fetcher(symbol, TIMEFRAME, CANDLE_LIMIT)
+            if df is None or len(df) < 210:
+                time.sleep(REQUEST_DELAY)
+                continue
+
+            sig = check_signal(df, symbol)
+            if sig is not None:
+                key = f"{symbol}_{sig['direction']}"
+                last_bar_time = str(df.index[-1])
+                if state.get(key) != last_bar_time:
+                    state[key] = last_bar_time
+                    new_signals.append(sig)
+
             time.sleep(REQUEST_DELAY)
-            continue
 
-        sig = check_signal(df, symbol)
-        if sig is not None:
-            key = f"{symbol}_{sig['direction']}"
-            last_bar_time = str(df.index[-1])
-            if state.get(key) != last_bar_time:
-                state[key] = last_bar_time
-                new_signals.append(sig)
+        if new_signals:
+            print(f"\n{len(new_signals)} new signal(s):")
+            for sig in new_signals:
+                msg = format_signal(sig)
+                print(msg)
+                send_telegram(msg)
+        else:
+            print("\nNo new signals.")
 
-        time.sleep(REQUEST_DELAY)
+        save_state(state)
 
-    if new_signals:
-        print(f"\n{len(new_signals)} new signal(s):")
-        for sig in new_signals:
-            msg = format_signal(sig)
-            print(msg)
-            send_telegram(msg)
-    else:
-        print("\nNo new signals.")
-
-    save_state(state)
-    with open("last_run.txt", "w") as f:
-        f.write(datetime.now(timezone.utc).isoformat())
+    finally:
+        # Always write last_run.txt so the repo stays active
+        # (prevents GitHub from disabling the schedule after 60 days)
+        with open(LAST_RUN_FILE, "w") as f:
+            f.write(datetime.now(timezone.utc).isoformat())
+        print(f"\nRun completed at {datetime.now(timezone.utc).isoformat()}")
 
 
 if __name__ == "__main__":
