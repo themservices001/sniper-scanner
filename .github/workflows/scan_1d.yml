@@ -28,11 +28,25 @@ jobs:
         env:
           TOKEN: ${{ secrets.PRIVATE_REPO_TOKEN }}
         run: |
-          curl -sS \
+          echo "Downloading scanner.py from private repo..."
+          curl -sS -w "\nHTTP_STATUS: %{http_code}\n" \
             -H "Authorization: token $TOKEN" \
             -H "Accept: application/vnd.github.v3.raw" \
             -o scanner.py \
             https://api.github.com/repos/themservices001/sniper-scanner-private/contents/scanner.py
+          echo ""
+          echo "=== File size check ==="
+          ls -la scanner.py
+          echo "=== First 5 lines ==="
+          head -5 scanner.py || echo "(file is empty)"
+          echo "=== Line count ==="
+          wc -l scanner.py
+
+      - name: Verify Python environment
+        run: |
+          python --version
+          python -c "import sys; print(sys.executable)"
+          python -c "print('python sanity check OK')"
 
       - name: Run 1D scanner
         env:
