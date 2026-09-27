@@ -2,17 +2,17 @@ name: Sniper Core Scanner
 
 on:
   schedule:
-    # Runs 5 minutes after every hour (UTC)
-    # Binance 1D candles close at 00:00 UTC; this catches them shortly after
+    # Runs every hour at :05 UTC — adjust as needed
     - cron: '5 * * * *'
-  workflow_dispatch:  # manual trigger button
+  workflow_dispatch:  # Manual trigger from GitHub UI
 
 permissions:
-  contents: write  # needed to commit state.json back
+  contents: write
 
 jobs:
   scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - name: Checkout repo
         uses: actions/checkout@v4
