@@ -354,6 +354,8 @@ def main():
         print("\nNo new signals.")
 
     save_state(state)
+    with open("last_run.txt", "w") as f:
+    f.write(datetime.now(timezone.utc).isoformat())
 
 
 if __name__ == "__main__":
