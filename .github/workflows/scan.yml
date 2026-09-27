@@ -1,0 +1,40 @@
+name: Sniper Core Scanner
+
+on:
+  schedule:
+    # Runs 5 minutes after every hour (UTC)
+    # Binance 1D candles close at 00:00 UTC; this catches them shortly after
+    - cron: '5 * * * *'
+  workflow_dispatch:  # manual trigger button
+
+permissions:
+  contents: write  # needed to commit state.json back
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run scanner
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+        run: python scanner.py
+
+      - name: Commit state
+        run: |
+          git config user.name 'GitHub Action'
+          git config user.email 'action@github.com'
+          git add state.json || true
+          git diff --staged --quiet || git commit -m "state update $(date -u +%Y-%m-%dT%H:%M)"
+          git push || true
