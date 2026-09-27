@@ -1,6 +1,6 @@
 """
 Sniper Core Scanner — replicates Pine Script indicator logic
-Runs on GitHub Actions, fetches Binance 1D data, sends Telegram alerts.
+Fetches full Binance USDT list dynamically, sends Telegram alerts.
 """
 
 import os
@@ -16,18 +16,50 @@ TELEGRAM_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN", "")
 TELEGRAM_CHAT_ID = os.environ.get("TELEGRAM_CHAT_ID", "")
 STATE_FILE = "state.json"
 TIMEFRAME = "1d"
-CANDLE_LIMIT = 300          # enough for EMA200 + warmup
-HTF_EMA_FAST = 50
-HTF_EMA_SLOW = 100
+CANDLE_LIMIT = 300
 MIN_CONFLUENCE = 7
 VOL_SPIKE_MULT = 1.5
 FLAT_THRESHOLD_PCT = 3.0
+REQUEST_DELAY = 0.15  # seconds between Binance calls
 
-# ── BINANCE PUBLIC API ──
 BASE_URL = "https://api.binance.com"
 
-def fetch_klines(symbol: str, interval: str = "1d", limit: int = 300):
-    """Fetch OHLCV candles from Binance public API (no API key)."""
+
+def fetch_all_usdt_pairs(exclude_leveraged=True, exclude_stable=True):
+    """Fetch every active USDT spot pair from Binance."""
+    url = f"{BASE_URL}/api/v3/exchangeInfo"
+    try:
+        r = requests.get(url, timeout=15)
+        r.raise_for_status()
+        data = r.json()
+    except Exception as e:
+        print(f"  Error fetching symbol list: {e}")
+        return []
+
+    STABLE_BASES = {
+        "USDC", "BUSD", "TUSD", "FDUSD", "DAI", "USDP", "USDD",
+        "USDE", "PYUSD", "EUR", "GBP", "TRY", "BRL", "ARS", "ZAR"
+    }
+
+    symbols = []
+    for s in data.get("symbols", []):
+        if s.get("quoteAsset") != "USDT":
+            continue
+        if s.get("status") != "TRADING":
+            continue
+        if exclude_stable and s.get("baseAsset") in STABLE_BASES:
+            continue
+        if exclude_leveraged:
+            base = s.get("baseAsset", "")
+            if base.endswith(("UP", "DOWN", "BULL", "BEAR")):
+                continue
+        symbols.append(s["symbol"])
+
+    return sorted(symbols)
+
+
+def fetch_klines(symbol, interval="1d", limit=300):
+    """Fetch OHLCV from Binance public API."""
     url = f"{BASE_URL}/api/v3/klines"
     params = {"symbol": symbol, "interval": interval, "limit": limit}
     try:
@@ -35,7 +67,6 @@ def fetch_klines(symbol: str, interval: str = "1d", limit: int = 300):
         r.raise_for_status()
         data = r.json()
     except Exception as e:
-        print(f"  Error fetching {symbol}: {e}")
         return None
 
     df = pd.DataFrame(data, columns=[
@@ -50,27 +81,25 @@ def fetch_klines(symbol: str, interval: str = "1d", limit: int = 300):
     return df[["open", "high", "low", "close", "volume"]].dropna()
 
 
-# ── INDICATOR CALCULATIONS (must match Pine Script) ──
-
-def ema(series: pd.Series, length: int) -> pd.Series:
+# ── INDICATOR CALCULATIONS ──
+def ema(series, length):
     return series.ewm(span=length, adjust=False).mean()
 
-def rsi(series: pd.Series, length: int = 14) -> pd.Series:
+def rsi(series, length=14):
     delta = series.diff()
     gain = delta.clip(lower=0).rolling(length).mean()
     loss = (-delta.clip(upper=0)).rolling(length).mean()
     rs = gain / loss.replace(0, np.nan)
     return 100 - (100 / (1 + rs))
 
-def atr(df: pd.DataFrame, length: int = 14) -> pd.Series:
-    high_low = df["high"] - df["low"]
-    high_close = (df["high"] - df["close"].shift()).abs()
-    low_close = (df["low"] - df["close"].shift()).abs()
-    tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+def atr(df, length=14):
+    hl = df["high"] - df["low"]
+    hc = (df["high"] - df["close"].shift()).abs()
+    lc = (df["low"] - df["close"].shift()).abs()
+    tr = pd.concat([hl, hc, lc], axis=1).max(axis=1)
     return tr.rolling(length).mean()
 
-def adx(df: pd.DataFrame, length: int = 14):
-    """Return (adx, plus_di, minus_di) series."""
+def adx(df, length=14):
     up = df["high"].diff()
     down = -df["low"].diff()
     plus_dm = np.where((up > down) & (up > 0), up, 0.0)
@@ -87,64 +116,42 @@ def adx(df: pd.DataFrame, length: int = 14):
     adx_s = dx.rolling(length).mean()
     return adx_s, plus_di, minus_di
 
-def macd(series: pd.Series, fast=12, slow=26, signal=9):
+def macd(series, fast=12, slow=26, signal=9):
     macd_line = ema(series, fast) - ema(series, slow)
     signal_line = ema(macd_line, signal)
-    hist = macd_line - signal_line
-    return macd_line, signal_line, hist
+    return macd_line, signal_line, macd_line - signal_line
 
 
-# ── CONFLUENCE SCORE (mirrors Pine Script) ──
-
-def compute_confluence(df: pd.DataFrame, direction: str) -> int:
-    """
-    Replicates the 11-factor confluence score from Sniper Core.
-    direction: 'LONG' or 'SHORT'
-    """
-    c = df["close"]
-    o = df["open"]
-    h = df["high"]
-    l = df["low"]
-    v = df["volume"]
-
-    ema9 = ema(c, 9)
-    ema21 = ema(c, 21)
-    ema50 = ema(c, 50)
-    ema100 = ema(c, 100)
+def compute_confluence(df, direction):
+    c, o, h, l, v = df["close"], df["open"], df["high"], df["low"], df["volume"]
+    ema9 = ema(c, 9); ema21 = ema(c, 21); ema100 = ema(c, 100)
     rsi7 = rsi(c, 7)
-    atr14 = atr(df, 14)
     adx14, _, _ = adx(df, 14)
-    macd_line, signal_line, hist = macd(c)
+    macd_line, signal_line, _ = macd(c)
     vol_sma20 = v.rolling(20).mean()
-
     last = -1
     score = 0
 
     if direction == "LONG":
         score += 1 if ema9.iloc[last] > ema21.iloc[last] else 0
         score += 1 if c.iloc[last] > ema100.iloc[last] else 0
-        score += 1 if c.iloc[last] > ema100.iloc[last] else 0  # HTF proxy (chart EMA100)
+        score += 1 if c.iloc[last] > ema100.iloc[last] else 0
         score += 1 if 50 < rsi7.iloc[last] < 85 else 0
         score += 1 if adx14.iloc[last] > 20 else 0
         score += 1 if v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT else 0
         score += 1 if macd_line.iloc[last] > signal_line.iloc[last] else 0
-        # Micro-breakout (3-bar)
         micro_high = h.rolling(3).max()
         score += 1 if c.iloc[last] > micro_high.iloc[last - 1] and c.iloc[last] > o.iloc[last] else 0
-        # Velocity (ROC2 acceleration)
         roc2 = c.pct_change(2)
         vel = ema(roc2, 3)
         score += 1 if vel.iloc[last] > 0 and vel.iloc[last] > vel.iloc[last - 1] else 0
-        # Volume pressure (simplified CLV * vol ratio)
         clv = ((c - l) - (h - c)) / (h - l).replace(0, np.nan)
         press = ema(clv * (v / vol_sma20), 3)
         score += 1 if press.iloc[last] > 0.15 else 0
-        # Wick rejection (lower wick)
         body = (c - o).abs()
         lower_wick = pd.concat([o, c], axis=1).min(axis=1) - l
         score += 1 if lower_wick.iloc[last] > body.iloc[last] * 1.2 and c.iloc[last] > o.iloc[last] else 0
-
-    else:  # SHORT
+    else:
         score += 1 if ema9.iloc[last] < ema21.iloc[last] else 0
         score += 1 if c.iloc[last] < ema100.iloc[last] else 0
         score += 1 if c.iloc[last] < ema100.iloc[last] else 0
@@ -167,63 +174,32 @@ def compute_confluence(df: pd.DataFrame, direction: str) -> int:
     return score
 
 
-# ── SIGNAL LOGIC (mirrors Pine Script) ──
-
-def check_signal(df: pd.DataFrame, symbol: str):
-    """Returns dict with signal info, or None if no signal."""
+def check_signal(df, symbol):
     if len(df) < 210:
         return None
-
-    c = df["close"]
-    o = df["open"]
-    h = df["high"]
-    l = df["low"]
-    v = df["volume"]
-
-    ema9 = ema(c, 9)
-    ema21 = ema(c, 21)
-    ema50 = ema(c, 50)
-    ema100 = ema(c, 100)
+    c, o, h, l, v = df["close"], df["open"], df["high"], df["low"], df["volume"]
+    ema9 = ema(c, 9); ema21 = ema(c, 21); ema100 = ema(c, 100)
     rsi7 = rsi(c, 7)
-    atr14 = atr(df, 14)
     adx14, _, _ = adx(df, 14)
     vol_sma20 = v.rolling(20).mean()
+    last = -1; prev = -2
 
-    last = -1
-    prev = -2
-
-    # ── HTF proxy: use 4H data would require separate fetch.
-    # For simplicity, we use EMA100 on the 1D chart as the HTF proxy.
-    # The Pine Script's HTF filter uses 4H and D EMAs; here we check
-    # price above chart EMA100 as a conservative substitute.
     htf_ok_long = c.iloc[last] > ema100.iloc[last]
     htf_ok_short = c.iloc[last] < ema100.iloc[last]
 
-    # ── Base conditions ──
-    base_long = (
-        c.iloc[last] > ema100.iloc[last]
-        and htf_ok_long
-        and 45 < rsi7.iloc[last] < 85
-        and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
-        and ema9.iloc[last] > ema9.iloc[prev]
-    )
-    base_short = (
-        c.iloc[last] < ema100.iloc[last]
-        and htf_ok_short
-        and 15 < rsi7.iloc[last] < 55
-        and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
-        and ema9.iloc[last] < ema9.iloc[prev]
-    )
+    base_long = (c.iloc[last] > ema100.iloc[last] and htf_ok_long
+                 and 45 < rsi7.iloc[last] < 85
+                 and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
+                 and ema9.iloc[last] > ema9.iloc[prev])
+    base_short = (c.iloc[last] < ema100.iloc[last] and htf_ok_short
+                  and 15 < rsi7.iloc[last] < 55
+                  and v.iloc[last] > vol_sma20.iloc[last] * VOL_SPIKE_MULT
+                  and ema9.iloc[last] < ema9.iloc[prev])
 
-    # ── Confluence ──
     score_long = compute_confluence(df, "LONG")
     score_short = compute_confluence(df, "SHORT")
-    conf_gate_long = score_long >= MIN_CONFLUENCE
-    conf_gate_short = score_short >= MIN_CONFLUENCE
-
-    # ── Signal ──
-    long_signal = base_long and conf_gate_long
-    short_signal = base_short and conf_gate_short
+    long_signal = base_long and score_long >= MIN_CONFLUENCE
+    short_signal = base_short and score_short >= MIN_CONFLUENCE
 
     if not long_signal and not short_signal:
         return None
@@ -232,13 +208,11 @@ def check_signal(df: pd.DataFrame, symbol: str):
     score = score_long if long_signal else score_short
     is_elite = score >= 8
 
-    # ── Adaptive floor ──
     vol_floor = vol_sma20.iloc[last]
     adx_floor = adx14.rolling(20).mean().iloc[last]
     vol_pass = v.iloc[last] >= vol_floor
     adx_pass = adx14.iloc[last] >= adx_floor
 
-    # ── 3-bar trend ──
     flat = FLAT_THRESHOLD_PCT / 100.0
     vol_dir = 1 if v.iloc[last] > v.iloc[last - 3] * (1 + flat) else (-1 if v.iloc[last] < v.iloc[last - 3] * (1 - flat) else 0)
     adx_dir = 1 if adx14.iloc[last] > adx14.iloc[last - 3] * (1 + flat) else (-1 if adx14.iloc[last] < adx14.iloc[last - 3] * (1 - flat) else 0)
@@ -260,20 +234,13 @@ def check_signal(df: pd.DataFrame, symbol: str):
     }
 
 
-# ── TELEGRAM ──
-
-def send_telegram(message: str):
+def send_telegram(message):
     if not TELEGRAM_TOKEN or not TELEGRAM_CHAT_ID:
-        print("  Telegram not configured — printing to console.")
         print(message)
         return
     url = f"https://api.telegram.org/bot{TELEGRAM_TOKEN}/sendMessage"
-    payload = {
-        "chat_id": TELEGRAM_CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown",
-        "disable_web_page_preview": True,
-    }
+    payload = {"chat_id": TELEGRAM_CHAT_ID, "text": message,
+               "parse_mode": "Markdown", "disable_web_page_preview": True}
     try:
         r = requests.post(url, json=payload, timeout=10)
         if r.status_code != 200:
@@ -282,7 +249,7 @@ def send_telegram(message: str):
         print(f"  Telegram exception: {e}")
 
 
-def format_signal(sig: dict) -> str:
+def format_signal(sig):
     emoji = "🟢" if sig["direction"] == "LONG" else "🔴"
     elite = " ⚡ ELITE" if sig["elite"] else ""
     floor = "✓" if sig["vol_floor_ok"] and sig["adx_floor_ok"] else "✗"
@@ -296,8 +263,6 @@ def format_signal(sig: dict) -> str:
     )
 
 
-# ── STATE (avoid duplicate alerts) ──
-
 def load_state():
     try:
         with open(STATE_FILE, "r") as f:
@@ -310,39 +275,46 @@ def save_state(state):
         json.dump(state, f, indent=2)
 
 
-# ── MAIN ──
-
 def main():
     watchlist = []
     try:
         with open("watchlist.txt", "r") as f:
-            watchlist = [line.strip().upper() for line in f if line.strip() and not line.startswith("#")]
+            watchlist = [line.strip().upper() for line in f
+                         if line.strip() and not line.startswith("#")]
     except FileNotFoundError:
-        print("No watchlist.txt found. Exiting.")
+        pass
+
+    if watchlist:
+        print(f"Using manual watchlist: {len(watchlist)} symbols")
+    else:
+        print("Fetching full Binance USDT list...")
+        watchlist = fetch_all_usdt_pairs()
+        print(f"Fetched {len(watchlist)} active USDT pairs")
+
+    if not watchlist:
+        print("No symbols to scan. Exiting.")
         return
 
-    print(f"Scanning {len(watchlist)} symbols on {TIMEFRAME}...")
     state = load_state()
     new_signals = []
 
-    for symbol in watchlist:
-        print(f"  → {symbol}")
+    for i, symbol in enumerate(watchlist):
+        if i % 50 == 0:
+            print(f"  Progress: {i}/{len(watchlist)}")
         df = fetch_klines(symbol, TIMEFRAME, CANDLE_LIMIT)
         if df is None or len(df) < 210:
+            time.sleep(REQUEST_DELAY)
             continue
 
         sig = check_signal(df, symbol)
-        if sig is None:
-            continue
+        if sig is not None:
+            key = f"{symbol}_{sig['direction']}"
+            last_bar_time = str(df.index[-1])
+            if state.get(key) != last_bar_time:
+                state[key] = last_bar_time
+                new_signals.append(sig)
 
-        # Deduplicate: only alert if this is a new bar's signal
-        key = f"{symbol}_{sig['direction']}"
-        last_bar_time = str(df.index[-1])
-        if state.get(key) == last_bar_time:
-            continue  # already alerted this bar
-
-        state[key] = last_bar_time
-        new_signals.append(sig)
+        time.sleep(REQUEST_DELAY)
 
     if new_signals:
         print(f"\n{len(new_signals)} new signal(s):")
@@ -355,7 +327,7 @@ def main():
 
     save_state(state)
     with open("last_run.txt", "w") as f:
-    f.write(datetime.now(timezone.utc).isoformat())
+        f.write(datetime.now(timezone.utc).isoformat())
 
 
 if __name__ == "__main__":
