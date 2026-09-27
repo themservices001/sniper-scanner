@@ -1,8 +1,8 @@
-name: Sniper 1H Scanner
+name: Sniper 1D Scanner
 
 on:
   schedule:
-    - cron: '5 * * * *'
+    - cron: '0 8 * * *'
   workflow_dispatch:
 
 permissions:
@@ -48,16 +48,16 @@ jobs:
           python -c "import sys; print(sys.executable)"
           python -c "print('python sanity check OK')"
 
-      - name: Run 1H scanner
+      - name: Run 1D scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
           TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
-        run: python scanner.py --mode=1h
+        run: python scanner.py --mode=1d
 
       - name: Commit state
         run: |
           git config user.name 'GitHub Action'
           git config user.email 'action@github.com'
-          git add state_1h.json last_run_1h.txt || true
-          git diff --staged --quiet || git commit -m "1h state $(date -u +%Y-%m-%dT%H:%M)"
+          git add state_1d.json last_run_1d.txt || true
+          git diff --staged --quiet || git commit -m "1d state $(date -u +%Y-%m-%d)"
           git push || true
