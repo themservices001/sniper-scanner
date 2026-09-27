@@ -11,7 +11,7 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -42,12 +42,6 @@ jobs:
           echo "=== Line count ==="
           wc -l scanner.py
 
-      - name: Verify Python environment
-        run: |
-          python --version
-          python -c "import sys; print(sys.executable)"
-          python -c "print('python sanity check OK')"
-
       - name: Run 1H scanner
         env:
           TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
@@ -58,6 +52,6 @@ jobs:
         run: |
           git config user.name 'GitHub Action'
           git config user.email 'action@github.com'
-          git add state_1h.json last_run_1h.txt || true
+          git add state_1h.json history_1h.json last_run_1h.txt || true
           git diff --staged --quiet || git commit -m "1h state $(date -u +%Y-%m-%dT%H:%M)"
           git push || true
